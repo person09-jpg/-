@@ -10,24 +10,26 @@
     padding: 0;
     height: 100%;
     overflow: hidden;
-    position: relative;
     font-family: sans-serif;
   }
 
+  /* Градиентный фон */
   body {
     background: linear-gradient(to bottom, #ffb6c1, #ffffff);
   }
 
+  /* Canvas для шариков */
   #backgroundCanvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: none; /* Чтобы клики проходили через canvas */
     z-index: 0;
   }
 
+  /* Контент поверх фона */
   .content {
     position: relative;
     z-index: 1;
@@ -46,11 +48,16 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('backgroundCanvas');
   const ctx = canvas.getContext('2d');
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
   const particles = [];
 
@@ -72,8 +79,4 @@
       const p = particles[i];
       p.y += p.speedY;
 
-      // рисуем шарик
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill(
+      ctx.beginPath()
