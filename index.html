@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Эффект жидкости</title>
+<title>Жидкость с лёгкой волной</title>
 <style>
   body, html {
     margin: 0;
@@ -40,64 +40,55 @@
 <canvas id="backgroundCanvas"></canvas>
 
 <div class="content">
-  <h1>Жидкость на фоне</h1>
-  <p>Экран наполняется синим “чаем” с волнами и пузырьками.</p>
+  <h1>Экран наполняется жидкостью</h1>
+  <p>Простой эффект “чая” с плавной волной сверху, лёгкий для сайта.</p>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('backgroundCanvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('backgroundCanvas');
+const ctx = canvas.getContext('2d');
 
-  let width, height;
-  function resizeCanvas() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let fillHeight = 0;       // текущая высота жидкости
+const fillSpeed = 0.5;    // скорость подъёма
+let waveOffset = 0;        // смещение для волны
+const waveAmplitude = 15;  // высота волны
+const waveLength = 200;    // длина волны
+const waveSpeed = 0.02;    // скорость волны
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  fillHeight += fillSpeed;
+  if(fillHeight > canvas.height) fillHeight = canvas.height;
+
+  // Рисуем жидкость с мягкой волной
+  ctx.fillStyle = '#377ceb';
+  ctx.globalAlpha = 0.7;
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height - fillHeight + Math.sin(waveOffset) * waveAmplitude);
+  for(let x = 0; x <= canvas.width; x++) {
+    const y = canvas.height - fillHeight + Math.sin((x / waveLength) * Math.PI * 2 + waveOffset) * waveAmplitude;
+    ctx.lineTo(x, y);
   }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+  ctx.lineTo(canvas.width, canvas.height);
+  ctx.lineTo(0, canvas.height);
+  ctx.closePath();
+  ctx.fill();
 
-  let fillHeight = 0; 
-  const fillSpeed = 0.3; 
-  const waveAmplitude = 20; // высота волны
-  const waveLength = 200;   // длина волны
-  const waveSpeed = 0.02;   // скорость волны
-  let waveOffset = 0;
+  waveOffset += waveSpeed;
 
-  // пузырьки
-  const bubbles = [];
-  function createBubble() {
-    bubbles.push({
-      x: Math.random() * width,
-      y: height - fillHeight + Math.random() * 50,
-      radius: Math.random() * 6 + 2,
-      speedY: Math.random() * 1 + 0.5,
-      alpha: Math.random() * 0.5 + 0.3
-    });
-  }
+  requestAnimationFrame(animate);
+}
 
-  function animate() {
-    ctx.clearRect(0, 0, width, height);
+animate();
+</script>
 
-    fillHeight += fillSpeed;
-    if (fillHeight > height) fillHeight = height;
-
-    // рисуем жидкость с волной
-    ctx.fillStyle = '#377ceb';
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.moveTo(0, height - fillHeight + Math.sin(waveOffset) * waveAmplitude);
-    for (let x = 0; x <= width; x++) {
-      let y = height - fillHeight + Math.sin((x / waveLength) * Math.PI * 2 + waveOffset) * waveAmplitude;
-      ctx.lineTo(x, y);
-    }
-    ctx.lineTo(width, height);
-    ctx.lineTo(0, height);
-    ctx.closePath();
-    ctx.fill();
-
-    waveOffset += waveSpeed;
-
-    // обновляем пузырьки
-    if (Math.random() < 0.1) createBubble();
-    for (let i = 0;
+</body>
+</html>
